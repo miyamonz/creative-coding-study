@@ -1,10 +1,11 @@
 let sketch = p => {
-    p.setup = () => {
-        p.createCanvas(p.windowWidth, p.windowHeight);
-        p.background(0);
-    }
-    p.draw = () => {
-    }
+  p.setup = () => {
+    p.createCanvas(300, 300);
+    p.background(255);
+  }
+  p.draw = () => {
+    p.ellipse(100,100,100)
+  }
 }
 
 export default sketch;
