@@ -1,7 +1,7 @@
 let sketch = p => {
     p.setup = () => {
-        p.createCanvas(p.windowWidth, p.windowHeight);
-        p.background(0);
+        p.createCanvas(300,300);
+        p.background(255);
     }
     p.draw = () => {
     }
