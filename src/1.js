@@ -1,17 +1,16 @@
 import {range, i2xy, cycle, add, lerp} from "./util/funcs.js"
+import * as ease from "./util/ease.js"
 let sketch = p => {
   let width = 400;
   p.setup = () => {
     p.createCanvas(width, width);
     p.background(255);
     p.strokeWeight(0)
-    let [a,b] = [1,2]
-    let c = 2 *  [1,9]
-    console.log(a,b,c)
+    p.fill(0)
   }
 
   let color = c => {
-    let freq = [3,2,7] 
+    let freq = [1,2,3] 
     let color = freq
       .map( f => 0.5 + Math.sin(f * c) )
       .map(e => e*100)
@@ -23,18 +22,17 @@ let sketch = p => {
     let time = p.frameCount
     let num = range(100)
     num.forEach( i => {
-      let {x,y} = i2xy(i,10);
-      let diff = cycle(time/5+i/Math.PI)
-      let t = Math.sin(time/50 + i*i-1)
-      let pos = [x,y]
-        .map(e => lerp(0,9,10,width-10,e))
-        .map(e => t*e+(1-t)*width/2)
-        .map(add(diff))
-
-      p.fill(color(i/100 + time/60));
-      let w = 1 + Math.sin(time/20 + i)
-      
-      p.ellipse(...pos,10 + 10*w)
+      let f = (t, e=0) => {
+        t -= e;
+        let m = t - Math.floor(t);
+        return  Math.floor(t)+ease.quintInOut(m) + e;
+      }
+      let [r,theta] = [i*2, i]
+        .map( (e,index)=> e*[1,0.1*f(time/100, i/100)][index] )
+      let pos = [r*Math.cos(theta), r*Math.sin(theta) ]
+        .map(e => e+width/2)
+      p.fill(color(time/10 + i/10))
+      p.ellipse(...pos,i*0.5)
     } )
   }
 }
