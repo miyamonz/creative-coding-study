@@ -3,8 +3,8 @@ import * as ease from "./util/ease.js"
 let sketch = p => {
   let width = 400;
   p.setup = () => {
-    p.createCanvas(width, width);
-    p.background(255);
+    let c = p.createCanvas(width, width);
+    p.background(0);
     p.strokeWeight(0)
     p.fill(0)
   }
@@ -16,40 +16,58 @@ let sketch = p => {
       .map(e => e*100)
     return p.color(...color)
   }
-
-
-  let func = time =>  i => {
-    let f = (t, e=0) => {
-      t -= e;
-      let m = t - Math.floor(t);
-      return  Math.floor(t)+ease.quintInOut(m) + e;
-    }
-    let [r,theta] = [i*2, i]
-      .map( (e,index)=> e*[1,0.1*f(time/50, i/100)][index] )
-    let pos = [r*Math.cos(theta), r*Math.sin(theta) ]
-      .map(e => e+width/2)
-    p.fill(color(time/10 + i/10))
-    p.ellipse(...pos,i*0.5)
-  };
+  
+  let p2i = pos => {
+    return 4 * (pos[0] + pos[1] * width)
+  }
 
   p.draw = () => {
-    p.background(255);
+    p.background(0);
     let time = p.millis()
-    
-    let polar = (r,t) => [r*Math.cos(t), r*Math.sin(t)]
-    let f = t => Math.sin(Math.sin(t))
-    
-    for(let x=0; x<width; x += 7){
-      for(let y=0; y<width; y+= 7){
-        let r = Math.cos(x ** 2  * y)
-        r += Math.random()
-        r += Math.sin(time)
-        p.ellipse(x,y,r)
-      }
-    }
+    let center = [width/2, width/2];
 
-    
-    
+    let n = time / 600;
+    let theta = Math.PI* 2 * n
+    let size = 20 + 40*(Math.sin(theta) + 1)
+    p.textSize(size)
+    p.fill(255);
+    let text = "ものっちさん" 
+    let i = Math.floor(n)%text.length;
+    // p.text(text[i], ...center.map(e => e-size/2), ...center.map(e => e+size/2));
+    text.split("").map( (text,n, arr) => {
+      let pos = center.map((e,i) => 
+        e + 100*[Math.sin,Math.cos][i](time/1000 -Math.PI * 2 * n/arr.length)
+      )
+      return { text, pos }
+    } ).forEach( ({text, pos}) => {
+      // p.text(text, ...pos.map( e=> e-size/2 ))
+    p.text(text, ...pos.map(e => e-size/2), ...pos.map(e => e+size/2));
+    })
+
+    p.loadPixels();
+    let num = 50**2;
+    let circles = range(num)
+      .map( i => i2xy(i, Math.sqrt(num)) )
+      .map( ({x,y}) => 
+        [x,y].map( e => lerp(0,Math.sqrt(num)-1,0,width, e))
+        .map(e => Math.floor(e))
+      ).map( ([x,y]) => {
+        let index = 4 * (width * y + x);
+        let r = p.pixels[index + 0]; 
+        let g = p.pixels[index + 1]; 
+        let b = p.pixels[index + 2];
+        let c = p.color(r,g,b);
+        return {
+          pos: [x,y],
+          color: c
+        }
+      })
+    p.clear();
+    circles.forEach( ({pos, color}) => {
+
+      p.fill(color)
+      p.ellipse(...pos, 6)
+    } )
   }
 }
 
