@@ -5,13 +5,14 @@ import Timeline from "./util/timeline.js"
 let width = 400;
 let center = [width/2, width/2];
 let timeline = new Timeline();
-timeline.then(t => [0,0], 1)
-  .moveTo([-100, -100],0.5, ease.quintInOut)
-  .moveTo([-100,  100],0.5, ease.quintInOut)
-  .moveTo([ 100,  100],0.5, ease.quintInOut)
-  .moveTo([ 100, -100],0.5, ease.quintInOut)
-  .moveTo([-100, -100],0.5, ease.quintInOut)
-  .moveTo([0,0],1)
+let e = ease.quintInOut;
+let t = 0.3
+timeline.then([-100,-100], 0)
+  .moveTo([-100,  100],t,e)
+  .moveTo([ 100,  100],t)
+  .moveTo([ 100, -100],t,e)
+  .moveTo([-100, -100],t)
+  .repeat()
 
 let sketch = p => {
   p.setup = () => {
@@ -28,9 +29,10 @@ let sketch = p => {
     p.fill(255);
     let time = p.millis() / 1000
     let seq = i => i + time/2
-    let text = "ものっちさん" 
+    let text = "ものっち";
+    // text = text.repeat(7);
     text.split("").forEach( (str, i) => {
-      let pos = timeline.func(time)
+      let pos = timeline.func(time/2 + i/10)
       p.text(str,  ...pos.map( e => e + center[1] ) )
     } )
   }
